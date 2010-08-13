@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Heroku Backup Orchestrator</title>
+		<link rel="stylesheet" type="text/css" href="/hba.css" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript" src="/hba.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="header">
+				<h1>Heroku Backup Orchestrator</h1>
+				<h4>Application: <%= settings.heroku_app %></h4>
+			</div>
+			<div id="main">
+				<div>
+					<input type="submit" value="Manual Backup" id="manual_backup_button"/>
+					<img src="/ajax-loader.gif" id="ajax_loader" style="display: none; vertical-align: middle;" />
+					<span id="backup_result"></span>
+				</div>
+				<h3>Bundles</h3>
+				<table>
+					<thead>
+						<tr>
+							<th>Filename</th>
+							<th>Uploaded</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<% @backups.each do |b| %>
+							<tr>
+								<td><%= b.key %></td>
+								<td><%= b.about['last-modified'] %></td>
+								<td><a href="/<%= b.key %>">Download</a></td>
+							</tr>
+						<% end %>
+				  </tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

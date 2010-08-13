@@ -1,0 +1,39 @@
+h3. Heroku Backup Orchestrator
+
+h4. Introduction
+
+HBO is designed to make backing up your Heroku applications easy. It is designed to be Heroku deployable and uses Amazon S3 as the permanent storage for your backups (heroku bundles). Backups are scheduled using the free daily cron addon. HBO also includes a simple web interface for viewing the contents of the S3 bucket where you keep your backups, and for triggering ad-hoc manual backups. 
+
+h4. Up and running with HBO
+
+* Enable the single bundle addon for the application you want to backup (unlimited bundles currently not supported by HBO)
+* Clone the git repo
+* Configure the application by editing the @app.yml@ file in the config directory
+* Add the users that can access the web interface by editing the @users.yml@ file in the config directory
+* Run @heroku create@ on in the application root directory
+* Deploy the app: @git push heroku master@
+* Add the free cron addon to schedule the backup task: @heroku addons:add cron:daily@
+
+h4. Configuration (config/app.yml)
+
+h5. Heroku
+
+* app (the app you want to backup)
+* user (the username required to log in to the app)
+* password (the password required to log in to the app)
+
+h5. s3
+
+* key (your S3 account access key ID)
+* secret (your S3 account secret access key)
+* bucket (the name of the bucket where HBA will store your backups. Make sure it exists, as it will not be created for you)
+
+The HBO web application interface is secured with basic authentication. You should enable SSL to further enhance security.
+
+The browser must have JavaScript enabled to support manual backups.
+
+h4. On the horizon
+
+* Manage backups for multiple applications
+* Animate a bundle directly from the web UI (when they fix the animate feature)
+* Pagination of bundles, as there are bound to be many.

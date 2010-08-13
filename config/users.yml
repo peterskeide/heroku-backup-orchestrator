@@ -1,0 +1,4 @@
+---
+users:
+  - login: yourlogin
+    password: yourpassword

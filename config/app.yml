@@ -1,0 +1,9 @@
+---
+heroku:
+  user: youruser
+  password: yourpassword
+  app: yourapp
+s3:
+  key: yourkey
+  secret: yoursecret
+  bucket: yourbucket
