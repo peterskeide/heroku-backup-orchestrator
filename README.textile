@@ -2,7 +2,7 @@ h3. Heroku Backup Orchestrator
 
 h4. Introduction
 
-HBO is designed to make backing up your Heroku applications easy. It is designed to be Heroku deployable and uses Amazon S3 as the permanent storage for your backups (heroku bundles). Backups are scheduled using the free daily cron addon. HBO also includes a simple web interface for viewing the contents of the S3 bucket where you keep your backups, and for triggering ad-hoc manual backups. 
+HBO makes backing up your Heroku applications easy. It is designed to be Heroku deployable and uses Amazon S3 as the permanent storage for your backups (heroku bundles). Backups are scheduled using the free daily cron addon. HBO also includes a simple web interface for viewing the contents of the S3 bucket where you keep your backups, and for triggering ad-hoc manual backups. 
 
 h4. Up and running with HBO
 
