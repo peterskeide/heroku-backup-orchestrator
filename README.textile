@@ -10,7 +10,7 @@ h4. Up and running with HBO
 * Clone the git repo
 * Configure the application by editing the @app.yml@ file in the config directory
 * Add the users that can access the web interface by editing the @users.yml@ file in the config directory
-* Run @heroku create@ on in the application root directory
+* Run @heroku create@ in the application root directory
 * Deploy the app: @git push heroku master@
 * Add the free cron addon to schedule the backup task: @heroku addons:add cron:daily@
 
@@ -22,7 +22,7 @@ h5. Heroku
 * user (the username required to log in to the app)
 * password (the password required to log in to the app)
 
-h5. s3
+h5. S3
 
 * key (your S3 account access key ID)
 * secret (your S3 account secret access key)
@@ -36,4 +36,5 @@ h4. On the horizon
 
 * Manage backups for multiple applications
 * Animate a bundle directly from the web UI (when they fix the animate feature)
-* Pagination of bundles, as there are bound to be many.
+* Pagination of bundles, as there are bound to be many
+* Send mail when backup fails (e.g. using the sendgrid addon or GMail smtp)
