@@ -1,10 +1,6 @@
-require 'rubygems'
+require 'lib/backup.rb' # Also loads rubygems, aws/s3, yaml and configuration
 require 'sinatra/base'
-require 'aws/s3'
-require 'yaml'
-require 'lib/backup.rb'
 require 'json'
-require 'lib/config.rb'
 
 module HerokuBackupOrchestrator
   class Webapp < Sinatra::Base   
@@ -60,10 +56,10 @@ module HerokuBackupOrchestrator
     post '/' do
       content_type :json
       begin
-        backup_handler = BackupHandler.new
-        backup_handler.backup
+        backup_service = BackupService.new
+        backup_service.backup
         {:status => 'success'}.to_json
-      rescue BackupFailedError
+      rescue BackupError
         {:status => 'error', :message => $!.message }.to_json
       end
     end

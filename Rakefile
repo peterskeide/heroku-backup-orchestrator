@@ -1,17 +1,8 @@
-require "#{File.dirname(__FILE__)}/lib/backup.rb"
-require 'logger'
-
 desc 'Capture a new bundle for your heroku app and upload it to Amazon S3'
 task :cron do
-  log = Logger.new(STDERR)
-  begin
-    log.debug("Backing up #{@heroku_app} ...")
-    backup_handler = HerokuBackupOrchestrator::BackupHandler.new
-    backup_handler.backup
-    log.debug("Backup finished successfully")
-  rescue HerokuBackupOrchestrator::BackupFailedError
-    log.error("Backup failed: #{$!.message}")
-  end
+  require "#{File.dirname(__FILE__)}/lib/backup.rb"
+  
+  HerokuBackupOrchestrator::BackupService.new.backup
 end
 
 desc 'Run unit tests'
