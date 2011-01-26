@@ -26,7 +26,7 @@ module HerokuBackupOrchestrator
     private
     
     def create_filename(application_name)
-      "heroku_backup_orchestrator/#{application_name}/#{Date.today.strftime('%d-%m-%Y')}-pgdump.tar.gz"
+      "heroku_backup_orchestrator/#{application_name}/#{Date.today.strftime('%d-%m-%Y')}.dump"
     end
   end
   

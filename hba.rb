@@ -46,11 +46,12 @@ module HerokuBackupOrchestrator
       erb :index
     end
   
-    get %r{(heroku_backup_orchestrator\/\w+\/\d{4}-\d{2}-\d{2}.tar.gz)} do
-      bundle = load_backup_by_name(params[:captures].first)
-      attachment(bundle.key)
-      content_type(bundle.content_type)
-      bundle.value
+    get %r{(heroku_backup_orchestrator\/\w+\S+\/\d{2}-\d{2}-\d{4}(.tar.gz|.dump))} do
+      backup = load_backup_by_name(params[:captures].first)
+      attachment(backup.key)
+      content_type(backup.content_type)
+      response['Content-Length'] = backup.content_length
+      backup.value
     end
     
     post '/' do
