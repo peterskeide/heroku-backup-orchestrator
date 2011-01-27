@@ -70,20 +70,66 @@ module HerokuBackupOrchestrator
   class AmazonS3
     include ::AWS::S3
     
-    # @param [String] key The key required to connect to Amazon S3
-    # @param [String] secret The secret key required to connect to Amazon S3
-    # @param [String] bucket The name of the bucket where backups will be stored. It must exist!
-    def initialize(key, secret, bucket)
-      @key, @secret, @bucket = key, secret, bucket
+    def initialize
+      @key = CONFIG['s3']['key']
+      @secret = CONFIG['s3']['secret']
+      @bucket = CONFIG['s3']['bucket']
     end
      
     # Upload backup to Amazon S3
     # 
     # @param [HerokuBackup] backup The backup to upload to Amazon S3    
     def upload(backup)
-      Base.establish_connection!(:access_key_id => @key, :secret_access_key => @secret)   
+      connect
       S3Object.store(backup.filename, open(backup.url), @bucket)
       Base.disconnect!
+    end
+    
+    # @param [String] application_name The name of the application whose backups you want to list
+    # @return [Array<S3Object>] Complete list of backups for the given application 
+    def load_backups(application_name)
+      connected do
+        opts = { :prefix => "heroku_backup_orchestrator/#{application_name}/" }
+        bucket = Bucket.find(@bucket, opts)
+        bucket ? bucket.objects(opts) : []
+      end  
+    end
+    
+    # @param [String] application_name The name of the application you want to retrieve the backup from
+    # @param [String] date The date of the backup (dd-mm-yyyy) 
+    # @param [Symbol] type The type of backup you are requesting. Valid values are :pgdump (default) and :bundle
+    # @return [S3Object, nil] A single S3Object or nil if no matching object is found
+    def load_backup(application_name, date, type = :pgdump)
+      connected do
+        begin
+          backup_name = "heroku_backup_orchestrator/#{application_name}/#{backup_name(date, type)}"
+          S3Object.find(backup_name, @bucket)
+        rescue NoSuchKey
+          nil
+        end
+      end
+    end
+    
+    private
+    
+    def backup_name(date, type)
+      case type
+      when :bundle
+        backup = "#{date}.tar.gz"
+      when :pgdump
+        backup = "#{date}.dump"
+      else raise "Illegal backup type: #{type}"
+      end
+    end
+    
+    def connected
+      raise "No block given" unless block_given?
+      connect unless Base.connected?   
+      yield
+    end
+    
+    def connect
+      Base.establish_connection!(:access_key_id => @key, :secret_access_key => @secret, :use_ssl => true)
     end
   end
 
@@ -110,7 +156,7 @@ module HerokuBackupOrchestrator
     end
     
     def amazon_s3
-      @amazon_s3 ||= AmazonS3.new(CONFIG['s3']['key'], CONFIG['s3']['secret'], CONFIG['s3']['bucket'])
+      @amazon_s3 ||= AmazonS3.new
     end
     
     def log

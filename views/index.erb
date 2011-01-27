@@ -32,7 +32,7 @@
 							<tr>
 								<td><%= b.key %></td>
 								<td><%= b.about['last-modified'] %></td>
-								<td><a href="/<%= b.key %>">Download</a></td>
+								<td><a href="<%= link_from_key(b.key) %>">Download</a></td>
 							</tr>
 						<% end %>
 				  </tbody>

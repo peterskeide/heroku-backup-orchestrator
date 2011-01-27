@@ -9,9 +9,6 @@ module HerokuBackupOrchestrator
     set :views,  File.expand_path(File.dirname(__FILE__) + '/views')
 
     set :heroku_app, HerokuBackupOrchestrator::CONFIG['heroku']['app']
-    set :s3_key,     HerokuBackupOrchestrator::CONFIG['s3']['key']
-    set :s3_secret,  HerokuBackupOrchestrator::CONFIG['s3']['secret']
-    set :s3_bucket,  HerokuBackupOrchestrator::CONFIG['s3']['bucket']
     set :users,      YAML.load_file('config/users.yml')['users']
 
     use Rack::Auth::Basic do |username, password|
@@ -27,33 +24,30 @@ module HerokuBackupOrchestrator
     end
     
     helpers do      
-      def s3(&block)
-        AWS::S3::Base.establish_connection!(:access_key_id => settings.s3_key,:secret_access_key => settings.s3_secret) unless AWS::S3::Base.connected?
-        block.call
+      def amazon_s3(&block)
+        @amazon_s3 ||= AmazonS3.new
       end
       
-      def load_backups
-        s3 { AWS::S3::Bucket.find(settings.s3_bucket, :prefix => "heroku_backup_orchestrator/#{settings.heroku_app}/") }
-      end
-      
-      def load_backup_by_name(name)
-        s3 { AWS::S3::S3Object.find(name, settings.s3_bucket) }
+      def link_from_key(key)
+        date = key.match(/\d{2}-\d{2}-\d{4}/)
+        type = key.match(/tar.gz\z/) ? "bundle" : "pgdump"
+        "/downloads/#{settings.heroku_app}/#{date}/#{type}"
       end
     end
   
     get '/' do
-      @backups = load_backups
+      @backups = amazon_s3.load_backups(settings.heroku_app)
       erb :index
     end
-  
-    get %r{(heroku_backup_orchestrator\/\w+\S+\/\d{2}-\d{2}-\d{4}(.tar.gz|.dump))} do
-      backup = load_backup_by_name(params[:captures].first)
+    
+    get '/downloads/:application_name/:date/:type' do
+      backup = amazon_s3.load_backup(params[:application_name], params[:date], params[:type].to_sym)
       attachment(backup.key)
       content_type(backup.content_type)
       response['Content-Length'] = backup.content_length
       backup.value
     end
-    
+  
     post '/' do
       content_type :json
       begin
