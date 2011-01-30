@@ -28,15 +28,14 @@ module HerokuBackupOrchestrator
         @amazon_s3 ||= AmazonS3.new
       end
       
-      def link_from_key(key)
-        date = key.match(/\d{2}-\d{2}-\d{4}/)
-        type = key.match(/tar.gz\z/) ? "bundle" : "pgdump"
-        "/downloads/#{settings.heroku_app}/#{date}/#{type}"
+      def link_to(backup)
+        "/downloads/#{backup.application_name}/#{backup.date}/#{backup.type}"
       end
     end
   
     get '/' do
       @backups = amazon_s3.load_backups(settings.heroku_app)
+      @current_page = params[:page] ? params[:page].to_i : 1
       erb :index
     end
     

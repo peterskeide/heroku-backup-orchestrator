@@ -9,7 +9,7 @@ desc 'Run unit tests'
 task :test do
   require 'rubygems'
   require 'test/unit'
-  require 'mocha'
+  #require 'mocha'
   
   test_dir = "#{File.dirname(__FILE__)}/test"
   Dir.open(test_dir).each do |f|

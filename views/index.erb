@@ -22,21 +22,43 @@
 				<table>
 					<thead>
 						<tr>
-							<th>Filename</th>
-							<th>Uploaded</th>
-							<th></th>
+							<th>Date (dd-mm-yyyy)</th>
+							<th>Size (MB)</th>
+							<th>Type</th>
+							<th>Options</th>
 						</tr>
 					</thead>
 					<tbody>
-						<% @backups.each do |b| %>
+						<% @backups.page(@current_page).each do |b| %>
 							<tr>
-								<td><%= b.key %></td>
-								<td><%= b.about['last-modified'] %></td>
-								<td><a href="<%= link_from_key(b.key) %>">Download</a></td>
+								<td><%= b.date %></td>
+								<td><%= b.size_mb %></td>
+								<td><%= b.type %></td>
+								<td><a href="<%= link_to(b) %>">Download</a></td>
 							</tr>
 						<% end %>
 				  </tbody>
 				</table>
+				<% if @backups.nr_of_pages > 1 %>
+					<p>
+						<% unless @current_page == 1 %>
+							<a href="/?page=<%= 1 %>">First</a>
+							<a href="/?page=<%= @current_page - 1 %>">Previous</a>
+						<% end %>
+						<% @backups.nr_of_pages.times do |i| %>
+							<% page_nr = i + 1 %>
+							<% if page_nr == @current_page %>
+								<%= page_nr %>
+							<% else %>
+								<a href="/?page=<%= page_nr %>"><%= page_nr %></a>
+							<% end %>
+						<% end %>
+						<% unless @backups.last_page?(@current_page) %>
+							<a href="/?page=<%= @current_page + 1 %>">Next</a>
+							<a href="/?page=<%= @backups.nr_of_pages %>">Last</a>
+						<% end %>
+					</p>
+				<% end %>
 			</div>
 		</div>
 	</body>
