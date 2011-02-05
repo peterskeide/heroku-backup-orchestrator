@@ -1,4 +1,4 @@
-require 'lib/backup.rb' # Also loads rubygems, aws/s3, yaml and configuration
+require 'lib/heroku_backup_orchestrator.rb'
 require 'sinatra/base'
 require 'json'
 
