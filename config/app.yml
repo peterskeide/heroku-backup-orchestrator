@@ -1,8 +1,11 @@
 ---
 heroku:
-  user: youruser
-  password: yourpassword
-  app: yourapp
+  example-application-one:
+    user: youruser
+    password: yourpassword
+  example-application-two:
+    user: youruser
+    password: yourpassword
 s3:
   key: yourkey
   secret: yoursecret

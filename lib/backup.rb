@@ -23,7 +23,7 @@ module HerokuBackupOrchestrator
       @url = url
       @type = "pgdump"
     end
-    
+        
     attr_reader :id, :url, :type, :application_name
     
     private
@@ -45,8 +45,27 @@ module HerokuBackupOrchestrator
       @from_name = 'DATABASE_URL'
       @from_url = config_vars[@from_name]
       authenticated_url = config_vars['PGBACKUPS_URL']
-      raise BackupError, 'Please add the (free) PGBackups addon before using the Heroku Backup Orchestrator' unless authenticated_url
+      raise BackupError, 'Please add the (free) PGBackups addon before using Heroku Backup Orchestrator with your application' unless authenticated_url
       @client = PGBackups::Client.new(authenticated_url)
+    end
+    
+    def self.application_names
+      CONFIG['heroku'].keys
+    end
+    
+    def self.find_by_name(name)
+      CONFIG['heroku'].each_key do |app|
+        return HerokuApplication.new(CONFIG['heroku'][app]['user'], CONFIG['heroku'][app]['password'], app) if name == app
+      end
+      nil
+    end
+    
+    def self.all
+      apps = []
+      CONFIG['heroku'].each do |app, config|
+        apps << HerokuApplication.new(CONFIG['heroku'][app]['user'], CONFIG['heroku'][app]['password'], app)
+      end
+      apps
     end
     
     # Creates a new backup (pgdump) of a Heroku application. 
@@ -74,6 +93,7 @@ module HerokuBackupOrchestrator
     extend Forwardable
     
     MEGABYTE = 1024.0**2
+    DATEFORMAT = "%d-%m-%Y"
     
     def initialize(application_name, s3_object)
       @s3_object = s3_object
@@ -92,7 +112,18 @@ module HerokuBackupOrchestrator
     end
     
     def date
-      @date ||= @s3_object.key.match(/\d{2}-\d{2}-\d{4}/)
+      @date ||= begin
+        date_str = @s3_object.key.match(/\d{2}-\d{2}-\d{4}/).to_s
+        Date.strptime(date_str, DATEFORMAT)
+      end
+    end
+    
+    def date_str
+      date.strftime(DATEFORMAT)
+    end
+    
+    def <=>(other)
+      self.date <=> other.date
     end 
   end
   
@@ -150,7 +181,7 @@ module HerokuBackupOrchestrator
             end
           end
         end
-        PagesArray.new(backups.reverse)
+        PagesArray.new(backups.sort.reverse)
       end  
     end
     
@@ -193,15 +224,19 @@ module HerokuBackupOrchestrator
     end
   end
 
-  class BackupService   
-    def backup
-      applications.each do |app|
+  class BackupService
+    def backup_app(heroku_app)
+      log.debug("Backing up #{heroku_app} ...")
+      backup = heroku_app.create_backup
+      log.debug("Uploading to Amazon S3")
+      amazon_s3.upload(backup)
+      log.debug("Backup finished successfully")
+    end
+    
+    def backup_all
+      HerokuApplication.all.each do |app|
         begin
-          log.debug("Backing up #{app} ...")
-          backup = app.create_backup
-          log.debug("Uploading to Amazon S3")
-          amazon_s3.upload(backup)
-          log.debug("Backup finished successfully")
+          backup_app(app)
         rescue BackupError => e
           log.error("Backup failed: #{$!.message}")
         end
@@ -209,12 +244,7 @@ module HerokuBackupOrchestrator
     end
     
     private
-    
-    def applications
-      heroku_app = HerokuApplication.new(CONFIG['heroku']['user'], CONFIG['heroku']['password'], CONFIG['heroku']['app'])
-      [heroku_app] 
-    end
-    
+
     def amazon_s3
       @amazon_s3 ||= AmazonS3.new
     end

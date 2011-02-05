@@ -1,0 +1,20 @@
+<% if @backups.nr_of_pages > 1 %>
+	<p>
+		<% unless @current_page == 1 %>
+			<%= link_to_page @selected_application, 1, "First" %>
+			<%= link_to_page @selected_application, @current_page - 1, "Previous" %>
+		<% end %>
+		<% @backups.nr_of_pages.times do |i| %>
+			<% page_nr = i + 1 %>
+			<% if page_nr == @current_page %>
+				<%= page_nr %>
+			<% else %>
+				<%= link_to_page @selected_application, page_nr, page_nr %>
+			<% end %>
+		<% end %>
+		<% unless @backups.last_page?(@current_page) %>
+			<%= link_to_page @selected_application, @current_page + 1, "Next" %>
+			<%= link_to_page @selected_application, @backups.nr_of_pages, "Last" %>
+		<% end %>
+	</p>
+<% end %>

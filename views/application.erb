@@ -1,0 +1,34 @@
+<h3>Backups for <%= @selected_application %></h3>
+<p>
+	<input type="submit" value="Create Backup" id="manual_backup_button" data-application-name="<%= @selected_application %>"/>
+	<img src="/ajax-loader.gif" id="ajax_loader" style="display: none; vertical-align: middle;" />
+	<span id="backup_result"></span>
+</p>
+<% if @backups && !@backups.empty? %>
+	<table>
+		<thead>
+			<tr>
+				<th>Date (dd-mm-yyyy)</th>
+				<th>Size (MB)</th>
+				<th>Type</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @backups.page(@current_page).each do |b| %>
+				<tr>
+					<td><%= b.date_str %></td>
+					<td><%= b.size_mb %></td>
+					<td><%= b.type %></td>
+					<td><a href="<%= link_to(b) %>">Download</a></td>
+				</tr>
+			<% end %>
+	  </tbody>
+	</table>
+	<%= erb :pagination %>
+<% else %>
+	<p>No backups available</p>
+<% end %>
+<p>
+	<a href="/">Back</a>
+</p>

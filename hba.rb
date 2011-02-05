@@ -7,9 +7,7 @@ module HerokuBackupOrchestrator
     set :root,   File.dirname(__FILE__)
     set :public, File.expand_path(File.dirname(__FILE__) + '/public')
     set :views,  File.expand_path(File.dirname(__FILE__) + '/views')
-
-    set :heroku_app, HerokuBackupOrchestrator::CONFIG['heroku']['app']
-    set :users,      YAML.load_file('config/users.yml')['users']
+    set :users,  YAML.load_file('config/users.yml')['users']
 
     use Rack::Auth::Basic do |username, password|
       if users.map { |user| user['name'] == username && user['password'] == password }.size >= 1
@@ -24,22 +22,36 @@ module HerokuBackupOrchestrator
     end
     
     helpers do      
-      def amazon_s3(&block)
+      def amazon_s3
         @amazon_s3 ||= AmazonS3.new
       end
       
+      def backup_service
+        @backup_service ||= BackupService.new
+      end
+      
       def link_to(backup)
-        "/downloads/#{backup.application_name}/#{backup.date}/#{backup.type}"
+        "/applications/#{backup.application_name}/downloads/#{backup.date_str}/#{backup.type}"
+      end
+      
+      def link_to_page(app_name, page_nr, text)
+        "<a href='/applications/#{app_name}?page=#{page_nr}'>#{text}</a>"
       end
     end
   
     get '/' do
-      @backups = amazon_s3.load_backups(settings.heroku_app)
-      @current_page = params[:page] ? params[:page].to_i : 1
+      @application_names = HerokuApplication.application_names
       erb :index
     end
     
-    get '/downloads/:application_name/:date/:type' do
+    get '/applications/:application_name' do
+      @selected_application = params[:application_name]
+      @backups = amazon_s3.load_backups(@selected_application)
+      @current_page = params[:page] ? params[:page].to_i : 1
+      erb :application
+    end
+    
+    get '/applications/:application_name/downloads/:date/:type' do
       backup = amazon_s3.load_backup(params[:application_name], params[:date], params[:type].to_sym)
       attachment(backup.key)
       content_type(backup.content_type)
@@ -47,11 +59,11 @@ module HerokuBackupOrchestrator
       backup.value
     end
   
-    post '/' do
+    post '/applications/:application_name' do
       content_type :json
       begin
-        backup_service = BackupService.new
-        backup_service.backup
+        heroku_app = HerokuApplication.find_by_name(params[:application_name])
+        backup_service.backup_app(heroku_app)
         {:status => 'success'}.to_json
       rescue BackupError
         {:status => 'error', :message => $!.message }.to_json
