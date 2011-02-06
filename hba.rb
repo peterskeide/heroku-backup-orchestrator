@@ -31,7 +31,7 @@ module HerokuBackupOrchestrator
       end
       
       def link_to(backup)
-        "/applications/#{backup.application_name}/downloads/#{backup.date_str}/#{backup.type}"
+        "/applications/#{backup.application_name}/downloads/#{backup.date}/#{backup.type}"
       end
       
       def link_to_page(app_name, page_nr, text)

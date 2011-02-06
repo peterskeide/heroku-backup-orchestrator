@@ -17,7 +17,7 @@
 		<tbody>
 			<% @backups.page(@current_page).each do |b| %>
 				<tr>
-					<td><%= b.date_str %></td>
+					<td><%= b.date %></td>
 					<td><%= b.size_mb %></td>
 					<td><%= b.type %></td>
 					<td><a href="<%= link_to(b) %>">Download</a></td>

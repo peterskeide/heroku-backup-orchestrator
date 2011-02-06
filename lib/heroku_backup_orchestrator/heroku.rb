@@ -15,7 +15,7 @@ module HerokuBackupOrchestrator
     private
     
     def create_id(application_name)
-      "heroku_backup_orchestrator/#{application_name}/#{Date.today.strftime('%d-%m-%Y')}.dump"
+      "heroku_backup_orchestrator/#{application_name}/#{Date.today}.dump"
     end
   end
   

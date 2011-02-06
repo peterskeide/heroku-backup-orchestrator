@@ -4,7 +4,6 @@ module HerokuBackupOrchestrator
     extend Forwardable
     
     MEGABYTE = 1024.0**2
-    DATEFORMAT = "%d-%m-%Y"
     
     def initialize(application_name, s3_object)
       @s3_object = s3_object
@@ -24,13 +23,9 @@ module HerokuBackupOrchestrator
     
     def date
       @date ||= begin
-        date_str = @s3_object.key.match(/\d{2}-\d{2}-\d{4}/).to_s
-        Date.strptime(date_str, DATEFORMAT)
+        date_str = @s3_object.key.match(/\d{4}-\d{2}-\d{2}/).to_s
+        Date.strptime(date_str)
       end
-    end
-    
-    def date_str
-      date.strftime(DATEFORMAT)
     end
     
     def <=>(other)
