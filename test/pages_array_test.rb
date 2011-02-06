@@ -1,5 +1,3 @@
-require 'lib/heroku_backup_orchestrator.rb'
-
 class PaginatableArrayTest < Test::Unit::TestCase
   include HerokuBackupOrchestrator
   
