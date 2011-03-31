@@ -98,7 +98,7 @@ module HerokuBackupOrchestrator
     def load_backup(application_name, date, type = :pgdump)
       connected do
         begin
-          backup_name = "heroku_backup_orchestrator/#{application_name}/#{backup_name(date, type)}"
+          backup_name = "heroku_backup_orchestrator/#{application_name}/#{basename(date, type)}"
           object = S3Object.find(backup_name, @bucket)
           S3Backup.new(application_name, object)
         rescue NoSuchKey
@@ -109,7 +109,7 @@ module HerokuBackupOrchestrator
     
     private
 
-    def backup_name(date, type)
+    def basename(date, type)
       case type
       when :bundle
         backup = "#{date}.tar.gz"

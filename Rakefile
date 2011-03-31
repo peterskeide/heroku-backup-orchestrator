@@ -6,8 +6,9 @@ end
 
 desc 'Run unit tests'
 task :test do
-  require 'test/unit'
   require 'lib/heroku_backup_orchestrator.rb'
+  require 'test/unit'
+  require 'mocha'
   Dir.glob('test/*_test.rb').each { |file| require file }
 end
 
