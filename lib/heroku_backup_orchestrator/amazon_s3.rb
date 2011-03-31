@@ -78,15 +78,7 @@ module HerokuBackupOrchestrator
       connected do
         opts = { :prefix => "heroku_backup_orchestrator/#{application_name}/" }
         bucket = Bucket.find(@bucket, opts)
-        backups = []
-        if bucket
-          objects = bucket.objects(opts)
-          if objects && !objects.empty?
-            objects.each do |obj|
-              backups << S3Backup.new(application_name, obj)
-            end
-          end
-        end
+        backups = bucket ? get_backups_from_bucket(bucket, opts, application_name) : []
         PaginateableArray.new(backups.sort.reverse)
       end  
     end
@@ -108,7 +100,18 @@ module HerokuBackupOrchestrator
     end
     
     private
-
+    
+    def get_backups_from_bucket(bucket, opts, application_name)
+      backups = []
+      objects = bucket.objects(opts)
+      if objects && !objects.empty?
+        objects.each do |obj|
+          backups << S3Backup.new(application_name, obj)
+        end
+      end
+      backups
+    end
+    
     def basename(date, type)
       case type
       when :bundle
