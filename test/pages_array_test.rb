@@ -10,39 +10,39 @@ class PaginatableArrayTest < Test::Unit::TestCase
     pages = PaginateableArray.new
     assert_equal(0, pages.nr_of_pages)
     
-    data = [1, 2, 3, 4, 5]
+    data = (1..5).to_a
     pages = PaginateableArray.new(data)
     assert_equal(1, pages.nr_of_pages)
     
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    data = (1..10).to_a
     pages = PaginateableArray.new(data)
     assert_equal(1, pages.nr_of_pages)
     
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    data = (1..15).to_a
     pages = PaginateableArray.new(data)
     assert_equal(2, pages.nr_of_pages)
     
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    data = (1..20).to_a
     pages = PaginateableArray.new(data)
     assert_equal(2, pages.nr_of_pages)
   end
   
   def test_should_return_requested_page
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    data = (1..30).to_a
     pages = PaginateableArray.new(data)
-    assert_equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pages.page(1))
-    assert_equal([11, 12, 13, 14, 15, 16, 17, 18, 19, 20], pages.page(2))
-    assert_equal([21, 22, 23, 24, 25, 26, 27, 28, 29, 30], pages.page(3))
+    assert_equal((1..10).to_a, pages.page(1))
+    assert_equal((11..20).to_a, pages.page(2))
+    assert_equal((21..30).to_a, pages.page(3))
   end
   
-  def test_should_return_firt_page_as_default
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  def test_should_return_first_page_as_default
+    data = (1..20).to_a
     pages = PaginateableArray.new(data)
-    assert_equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pages.page)
+    assert_equal((1..10).to_a, pages.page)
   end
   
   def test_should_say_if_given_page_is_last_page
-    data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    data = (1..20).to_a
     pages = PaginateableArray.new(data)
     assert(!pages.last_page?(1))
     assert(pages.last_page?(2))
