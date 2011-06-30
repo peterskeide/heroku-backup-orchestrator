@@ -6,9 +6,9 @@ require 'heroku'
 require 'pgbackups/client'
 require 'date'
 require 'logger'
-require 'lib/heroku_backup_orchestrator/heroku.rb'
-require 'lib/heroku_backup_orchestrator/amazon_s3.rb'
-require 'lib/heroku_backup_orchestrator/backup.rb'
+require './lib/heroku_backup_orchestrator/heroku.rb'
+require './lib/heroku_backup_orchestrator/amazon_s3.rb'
+require './lib/heroku_backup_orchestrator/backup.rb'
 
 # @author Peter Skeide
 module HerokuBackupOrchestrator

@@ -1,4 +1,7 @@
-require 'lib/heroku_backup_orchestrator.rb'
+require 'rubygems'
+require 'bundler/setup'
+
+require './lib/heroku_backup_orchestrator.rb'
 require 'sinatra/base'
 require 'json'
 

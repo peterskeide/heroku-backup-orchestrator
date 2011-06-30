@@ -1,3 +1,3 @@
-require 'hba.rb'
+require './hba.rb'
 
 run HerokuBackupOrchestrator::Webapp
