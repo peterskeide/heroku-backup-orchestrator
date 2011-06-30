@@ -68,7 +68,7 @@ module HerokuBackupOrchestrator
         heroku_app = HerokuApplication.find_by_name(params[:application_name])
         backup_service.backup_app(heroku_app)
         {:status => 'success'}.to_json
-      rescue BackupError
+      rescue Exception
         {:status => 'error', :message => $!.message }.to_json
       end
     end

@@ -10,3 +10,4 @@ s3:
   key: yourkey
   secret: yoursecret
   bucket: yourbucket
+error_email: your@email.com

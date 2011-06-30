@@ -13,8 +13,9 @@ module HerokuBackupOrchestrator
       HerokuApplication.all.each do |app|
         begin
           backup_app(app)
-        rescue BackupError => e
-          log.error("Backup failed: #{$!.message}")
+        rescue Exception => e
+          log.error("Backup failed: #{e.message}")
+          EmailErrorReporter.new.report(e)
         end
       end
     end
