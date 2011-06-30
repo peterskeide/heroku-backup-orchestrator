@@ -11,7 +11,7 @@ module HerokuBackupOrchestrator
       }
       Pony.options = {
         :from => CONFIG['error_email'], :to => CONFIG['error_email'],
-        :via => 'smtp', :via_options => smtp_options,
+        :via => :smtp, :via_options => smtp_options,
         :subject => 'BACKUP ERROR'
       }
     end
