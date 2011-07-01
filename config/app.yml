@@ -10,4 +10,6 @@ s3:
   key: yourkey
   secret: yoursecret
   bucket: yourbucket
-error_email: your@email.com
+sendgrid:
+  from_email: from@email.com
+  to_email: to@email.com
