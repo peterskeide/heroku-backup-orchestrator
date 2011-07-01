@@ -1,6 +1,21 @@
 module HerokuBackupOrchestrator
-  class EmailErrorReporter   
+  class ErrorReporter
+    def self.new
+      sendgrid? ? EmailErrorReporter.new : LogErrorReporter.new
+    end
     
+    def report(error)
+      raise "Not implemented"
+    end
+    
+    private
+    
+    def self.sendgrid?
+      CONFIG['sendgrid'] && ENV['SENDGRID_USERNAME']
+    end
+  end
+
+  class EmailErrorReporter      
     Pony.options = {
       :from => CONFIG['sendgrid']['from_email'], :to => CONFIG['sendgrid']['to_email'],
       :subject => 'BACKUP ERROR', :via => :smtp, :via_options => {
@@ -23,6 +38,15 @@ module HerokuBackupOrchestrator
       }
       Pony.mail(:body => body)
     end
-
+  end
+  
+  class LogErrorReporter
+    def initialize
+      @log = Logger.new(STDERR)
+    end
+    
+    def report(error)    
+      @log.error("An error occurred during backup", error)
+    end
   end 
 end

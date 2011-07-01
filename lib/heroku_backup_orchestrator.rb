@@ -7,10 +7,6 @@ require 'pgbackups/client'
 require 'date'
 require 'logger'
 require 'pony'
-require './lib/heroku_backup_orchestrator/heroku.rb'
-require './lib/heroku_backup_orchestrator/amazon_s3.rb'
-require './lib/heroku_backup_orchestrator/email_error_reporter.rb'
-require './lib/heroku_backup_orchestrator/backup.rb'
 
 # @author Peter Skeide
 module HerokuBackupOrchestrator
@@ -18,3 +14,9 @@ module HerokuBackupOrchestrator
   
   class BackupError < StandardError; end
 end
+
+# Require HBO code after reading configuration to ensure config is available at class/module load time
+require './lib/heroku_backup_orchestrator/heroku.rb'
+require './lib/heroku_backup_orchestrator/amazon_s3.rb'
+require './lib/heroku_backup_orchestrator/error_reporter.rb'
+require './lib/heroku_backup_orchestrator/backup.rb'

@@ -14,8 +14,7 @@ module HerokuBackupOrchestrator
         begin
           backup_app(app)
         rescue Exception => e
-          log.error("Backup failed: #{e.message}")
-          EmailErrorReporter.new.report(e)
+          ErrorReporter.new.report(e)
         end
       end
     end
