@@ -36,8 +36,8 @@ The browser must have JavaScript enabled to support manual backups.
 
 h4. On the horizon
 
-* Pri 1: support PG backups instead of bundles
-* Manage backups for multiple applications
+* Pri 1: support PG backups instead of bundles                               (Implemented in HEAD)
+* Manage backups for multiple applications                                   (Implemented in HEAD)
 * Restore a PG backup directly from the web UI
-* Pagination of backup files, as there are bound to be many
-* Send mail when backup fails (e.g. using the sendgrid addon or GMail smtp)
+* Pagination of backup files, as there are bound to be many                  (Implemented in HEAD)
+* Send mail when backup fails (e.g. using the sendgrid addon or GMail smtp)  (Implemented in HEAD - uses SendGrid)
