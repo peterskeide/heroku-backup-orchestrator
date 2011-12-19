@@ -15,18 +15,20 @@ module HerokuBackupOrchestrator
     end
   end
 
-  class EmailErrorReporter      
-    Pony.options = {
-      :from => CONFIG['sendgrid']['from_email'], :to => CONFIG['sendgrid']['to_email'],
-      :subject => 'BACKUP ERROR', :via => :smtp, :via_options => {
-        :address        => 'smtp.sendgrid.net',
-        :port           => '25',
-        :authentication => :plain,
-        :user_name      => ENV['SENDGRID_USERNAME'],
-        :password       => ENV['SENDGRID_PASSWORD'],
-        :domain         => ENV['SENDGRID_DOMAIN']
-      }    
-    }
+  class EmailErrorReporter
+    def initialize
+      Pony.options = {
+        :from => CONFIG['sendgrid']['from_email'], :to => CONFIG['sendgrid']['to_email'],
+        :subject => 'BACKUP ERROR', :via => :smtp, :via_options => {
+          :address        => 'smtp.sendgrid.net',
+          :port           => '25',
+          :authentication => :plain,
+          :user_name      => ENV['SENDGRID_USERNAME'],
+          :password       => ENV['SENDGRID_PASSWORD'],
+          :domain         => ENV['SENDGRID_DOMAIN']
+        }    
+      }
+    end         
 
     def report(error)
       body = %{
